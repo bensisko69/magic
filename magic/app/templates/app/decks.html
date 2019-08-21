@@ -1,0 +1,47 @@
+{% extends 'app/index.html' %}
+
+{% block content %}
+
+
+<div>
+	<p>Mes decks</p>
+	<input type="text" name="nameDeck" id="nameDeck">
+	<button type="submit" id="validate">Créer</button>
+	<h2>Mes decks</h2>
+	{% for value in decks  %}
+			<p>{{ value.deckName }}</p><br>
+	{% endfor %}
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+	
+{% csrf_token %}
+<script type="text/javascript">
+
+$(document).on('click', '#validate', function()
+    	{
+    		$.ajax({
+			   type: "POST",
+			   url: "createDecks",
+			   dataType: "json",
+			   traditional: false,
+			   data: {'nameDeck': $('#nameDeck').val()},
+			   success: function(response) 
+			   {
+			   		console.log(response);
+			   		document.location.reload(true);
+
+			   },
+			   error: function (argument) 
+			   {
+			   		console.log("error");
+			   }
+			});
+    	});
+
+</script>
+
+{% endblock %}

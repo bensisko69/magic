@@ -1,0 +1,107 @@
+{% extends 'app/index.html' %}
+
+{% block content %}
+	<div>
+		<!--<label>Couleur</label>
+		<select name="color" id="colors">
+			{% for value in dump  %}
+				<option value="{{ value }}">{{ value }}</option>
+			{% endfor %}
+		</select>
+		<label>Type</label>
+		<select name="type" id="types">
+			{% for value in type  %}
+				<option value="{{ value}}">{{ value }}</option>
+			{% endfor %}
+		</select>-->
+		<label name="rarity">Rareter</label>
+		<select name="rarity" id="rarity">
+		    <option value="Common">Common</option>
+		    <option value="Rare">Rare</option>
+		    <option value="Uncommon">Uncommon</option>
+		    <option value="Mythic">Mythic</option>
+		    <option value="Mythic Rare">Mythic Rare</option>
+	  	</select>
+	  	<label name="cmc">CMC</label>
+	  	<input type="number" name="cmc" id="cmc" value="0">
+	  	<label>Nom</label>
+	  	<input type="text" name="name" placeholder="Name" id="name">
+	</div>	
+	<button type="button" id="search" class="btn btn-info">Chercher</button>
+	<table>
+		<thead class="columns">
+			  <tr>
+			    <th>cardName</th>
+			    <th>cmc</th>
+			    <th>power</th>
+			    <th>rarity</th>
+			    <th>pk</th>
+			  </tr>
+		</thead>
+	</table>
+{% endblock %}
+
+{% block script %}
+    <script>
+    	$("#search").click(function() 
+    	{
+    		if ($('#name').val() == '')
+    			$name = 'null';
+    		else
+    			$name = $('#name').val();
+	    	$.ajax({
+			   type: "POST",
+			   url: "resultCard",
+			   dataType: "json",
+			   traditional: false,
+			   data: {'colors': $('#colors').val(), 'types': $('#types').val(),'rarity': $('#rarity').val(), 'name' : $name, 'cmc' : $('#cmc').val()},
+			   success: function(response) 
+			   {
+			   		var tab = JSON.parse(response)
+			   		$.each(tab, function(o, objs){
+			   			pk = objs.pk;
+			   			$.each(objs, function(i, obj) {
+					   		if (obj.cardName || obj.cmc || obj.power || obj.rarity)
+					   		{
+		   						$(".columns").append(
+						   			'<tr>' 
+						   			+ '<th>' + obj.cardName + '</th>'
+						   			+ '<th>' + obj.cmc + '</th>'
+						   			+ '<th>' + obj.power + '</th>'
+						   			+ '<th>' + obj.rarity + '</th>' 
+						   			+ '<th data-pk=' + pk + ' class="addCard" > Ajouter </th>' + '</tr>' + '</tr>'
+					   			);
+					   		}
+
+						});
+			   		})
+			   
+			   },
+			   error: function (argument) 
+			   {
+			   		console.log("error");
+			   }
+			});
+    	});
+
+    	$(document).on('click', '.addCard', function(elements)
+    	{
+    		console.log($(this).data('pk'));
+    		$.ajax({
+			   type: "POST",
+			   url: "addCard",
+			   dataType: "json",
+			   traditional: false,
+			   data: {'id': $(this).data('pk')},
+			   success: function(response) 
+			   {
+			   		console.log(response);
+			   },
+			   error: function (argument) 
+			   {
+			   		console.log("error");
+			   }
+			});
+    	});
+    </script>
+{% endblock %}

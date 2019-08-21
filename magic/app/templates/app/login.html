@@ -1,0 +1,66 @@
+{% extends 'app/index.html' %}
+
+{% block content %}
+
+
+<div>
+	<p>Login</p>
+	<input type="text" class="username"></input>
+	<input type="password" class="password"></input>
+	<button type="submit" id="validate">Valider</button>
+	<p class="alert" id="error"></p>
+</div>
+<div>
+	<p>Inscription</p>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+	
+{% csrf_token %}
+<script type="text/javascript">
+
+	var validate = document.getElementById('validate');
+
+	validate.onclick = function() 
+	{
+		var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+		$.ajax({
+		   type: "POST",
+		   url: "loginUser",
+		   dataType: "json",
+		   traditional: true,
+		   data: {'username': $('.username').val(), 'password': $('.password').val()},
+		   success: function(response) 
+		   {
+		   		if (response == 'noUser')
+		   		{
+		   			$('#error').html("Pas de user");
+		   		}
+		   		else if(response = "empty")
+		   		{
+		   			$('#error').html("Champs vide");
+		   			
+		   		}
+		   		else if (response = "success") 
+		   		{
+		   			console.log(response);
+		   		}
+		   		else
+		   		{
+		   			$('#error').empty();
+		   		}
+		   },
+		   error: function (argument) {
+		   	console.log(argument);
+		   	alert('error login');
+		   }
+		});
+
+	};
+
+</script>
+
+{% endblock %}
