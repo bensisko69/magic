@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import *
 
 class CardUAdmin(admin.ModelAdmin):
-	list_display = ('id', 'cardName', 'rarity', 'cmc', 'power')
+	list_display = ('id', 'cardName','number', 'rarity', 'cmc', 'power', 'mana', 'multiverseid')
 	list_display_links = ('id', 'rarity')
 	list_filter = ('cmc', 'rarity')
 

@@ -121,7 +121,7 @@ def importCard(request):
 	color.colorIdentity = "B"
 	color.save()
 	i = 0
-	while i <= 800:
+	while i <= 0:
 		cards = Card.where(page=i).where(pageSize=300).all()
 		if len(cards) > 0:
 			for card in cards:
@@ -129,15 +129,31 @@ def importCard(request):
 				c.cardName = card.name
 				c.cmc = card.cmc
 				c.type = card.type
+				c.rarity = card.rarity
+				c.text = card.text
+				c.number = card.number
+				if hasattr(card, 'manaCost'):
+					c.mana = card.manaCost
 				if card.colors:
 					identity = card.colors[0]
 					colors = Color.objects.filter(color=identity).values()
-				c.rarity = card.rarity
 				c.power = card.power
+				if hasattr(card, 'multiverseid'):
+						c.multiverseid = card.multiverseid
+				if hasattr(card, 'foreignNames'):
+					for translate in card.foreignnames:
+						if translate.language == "French":
+							frenchTrad = CardTraduction()
+							frenchTrad.imageUrl = translate.imageUrl
+							frenchTrad.language = "French"
+							frenchTrad.text = translate.text
+							frenchTrad.cardId = translate.multiverseid
+							frenchTrad.save()
+							c.traduction = frenchTrad.id
 				c.save()
 			i += 1
 		else:
-			i = 801
+			i = 1
 	return render(request, 'app/search.html', {"len": len(cards)})
 
 		
